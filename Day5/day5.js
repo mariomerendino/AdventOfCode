@@ -49,8 +49,8 @@ class Line {
   }
 }
 
-const x = () => {
-  fs.readFile('/Users/mariomerendino/Desktop/CodingProjects/AdventOfCode2021/Day5/input.txt', 'utf8' , (_err, data) => {
+const run = () => {
+  fs.readFile('input.txt', 'utf8' , (_err, data) => {
     const lines = []
     const fileLines = data.split("\n");
     fileLines.forEach((fileLine) => {
@@ -88,4 +88,4 @@ const x = () => {
   });
 };
 
-x();
+run();
