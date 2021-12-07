@@ -6,8 +6,60 @@ fs.readFile('input.txt', 'utf8' , (err, data) => {
     return
   }
   const arrayOfInputs = data.split("\n")
+  //partOne(arrayOfInputs)
+  partTwo(arrayOfInputs)
+})
+
+const partTwo = (arrayOfInputs) => {
   const lengthOfEachInput = arrayOfInputs[0].length;
-  map = {}
+  let possibleO2 = arrayOfInputs;
+  let possibleCO2 = arrayOfInputs;
+
+  let O2Binary = ''
+  let CO2Binary = ''
+
+  let bitCount = [0, 0]
+
+  for(let i = 0; i < lengthOfEachInput; i++) {
+    for(let j = 0; j < possibleO2.length; j++) {
+      let bit = possibleO2[j].charAt(i)
+      bitCount[parseInt(bit)] = bitCount[parseInt(bit)] + 1;
+    }
+
+    let morePopular = bitCount[1] >= bitCount[0]  ? '1' : '0'
+    possibleO2 = possibleO2.filter((possible) => possible.charAt(i) == morePopular)
+    if(possibleO2.length == 1) {
+      O2Binary = possibleO2[0];
+      break;
+    }
+    bitCount = [0, 0]
+
+  }
+
+  bitCount = [0, 0]
+
+  for(let i = 0; i < lengthOfEachInput; i++) {
+    for(let j = 0; j < possibleCO2.length; j++) {
+      let bit = possibleCO2[j].charAt(i)
+      bitCount[parseInt(bit)] = bitCount[parseInt(bit)] + 1;
+    }
+
+    let lessPopular = bitCount[1] < bitCount[0]  ? '1' : '0'
+    possibleCO2 = possibleCO2.filter((possible) => possible.charAt(i) == lessPopular)
+    if(possibleCO2.length == 1) {
+      CO2Binary = possibleCO2[0];
+      break;
+    }
+    bitCount = [0, 0]
+
+  }
+
+  console.log(convertBinaryToDecimal(O2Binary) * convertBinaryToDecimal(CO2Binary));
+};
+
+const partOne = (arrayOfInputs) => {
+  const lengthOfEachInput = arrayOfInputs[0].length;
+  let map = {}
 
   arrayOfInputs.forEach((input) => {
     for(let i = 0; i < lengthOfEachInput; i++) {
@@ -23,14 +75,15 @@ fs.readFile('input.txt', 'utf8' , (err, data) => {
       }
     }
   })
-  console.log(map)
 
   const gamma = buildBinaray(map, lengthOfEachInput);
-  console.log(gamma);
   const epsilon = invertBinary(gamma);
+
+  console.log(gamma);
   console.log(epsilon);
+
   console.log(convertBinaryToDecimal(gamma) * convertBinaryToDecimal(epsilon));
-})
+}
 
 const buildBinaray = (map, length) => {
   let string = ''
