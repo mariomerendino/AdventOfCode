@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { createSourceMapSource } = require('typescript');
 
 const readInputFile = (test) => {
   let path = test ? 'testinput2.txt' : 'input.txt';
