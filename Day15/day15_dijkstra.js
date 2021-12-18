@@ -6,7 +6,7 @@ class Node {
     this.x = x;
     this.y = y;
     this.value = value;
-    this.pathRisk = (x == 0 && y == 0) ? 0 : Infinity;
+    this.distance = (x == 0 && y == 0) ? 0 : 1000000000000000;
     this.visited =  false;
     this.left = null;
     this.right = null;
@@ -64,6 +64,37 @@ const readInputFilePart2 = (test) => {
   })
 
   // DO SOMETHING TO EXPAND THE MAP
+  const initialSize = map.length;
+  for (let y = 0; y < initialSize; y++) {
+      const row1 = map[y];
+      for (let rY = 0; rY < 5; rY++) {
+          const y2 = (rY * initialSize) + y;
+          const row2 = map[y2] || (map[y2] = []);
+          for (let x = 0; x < initialSize; x++) {
+              for (let rX = 0; rX < 5; rX++) {
+                  // Skip 0,0 (don't project into the source)
+                  if (rY === 0 && rX === 0) {
+                      continue;
+                  }
+  
+                  // Compute location to project to
+                  const x2 = (rX * initialSize) + x;
+  
+                  // Compute the new risk value
+                  const increase = rX + rY;
+                  let newRisk = row1[x] + increase;
+                  if (newRisk > 9) {
+                      newRisk -= 9;
+                  }
+  
+                  // Project the value
+                  row2[x2] = newRisk;
+              }
+          }
+      }
+  }
+
+  console.log(map)
   
   map.forEach((row, rowIdx) => {
     nodeMap.push([])
@@ -91,17 +122,17 @@ const readInputFilePart2 = (test) => {
   })
 };
 
-const updatePathRisk = (fromNode, toNode) => {
-  const newRisk = fromNode.pathRisk + toNode.value;
-  if (newRisk < toNode.pathRisk) {
-    toNode.pathRisk = newRisk;
+const updateDistance = (fromNode, toNode) => {
+  const newRisk = fromNode.distance + toNode.value;
+  if (newRisk < toNode.distance) {
+    toNode.distance = newRisk;
   }
 }
 
-const pickNextFromQueue = (nodeQueue) => {
+const findNextElementWithSmallestPath = (nodeQueue) => {
   let next = null;
   for (const node of nodeQueue) {
-      if (next === null || node.pathRisk < next.pathRisk) {
+      if (next === null || node.distance < next.distance) {
           next = node;
       }
   }
@@ -121,23 +152,23 @@ const dijkstra = () => {
       break;
     }
 
-    const current = pickNextFromQueue(nodeQueue);
+    const current = findNextElementWithSmallestPath(nodeQueue);
   
     // Update risks of all connections
     if (current.up && !current.up.visited) {
-      updatePathRisk(current, current.up);
+      updateDistance(current, current.up);
       nodeQueue.add(current.up);
     }
     if (current.down && !current.down.visited) {
-      updatePathRisk(current, current.down);
+      updateDistance(current, current.down);
       nodeQueue.add(current.down);
     }
     if (current.right && !current.right.visited) {
-      updatePathRisk(current, current.right);
+      updateDistance(current, current.right);
       nodeQueue.add(current.right);
     }
     if (current.left && !current.left.visited) {
-      updatePathRisk(current, current.left);
+      updateDistance(current, current.left);
       nodeQueue.add(current.left);
     }
 
@@ -147,17 +178,17 @@ const dijkstra = () => {
 }
 
 const runPart1 = () => {
-  readInputFile(false);
+  readInputFile(true);
   dijkstra()
   const endNode = nodeMap[nodeMap.length - 1][nodeMap.length - 1];
-  console.log(endNode.pathRisk)
+  console.log(endNode.distance)
 }
 
 const runPart2 = () => {
-  readInputFilePart2(true);
+  readInputFilePart2(false);
   dijkstra()
   const endNode = nodeMap[nodeMap.length - 1][nodeMap.length - 1];
-  console.log(endNode.pathRisk)
+  console.log(endNode.distance)
 }
 
-runPart2();
+runPart1();
